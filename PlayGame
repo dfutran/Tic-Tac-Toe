@@ -1,0 +1,279 @@
+
+import javax.swing.*;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+
+public class Game implements ActionListener {
+	JFrame frame = new JFrame("Tic Tac Toe");
+	
+	JPanel panel = new JPanel();
+	JPanel outside = new JPanel();
+	JPanel end_screen = new JPanel();
+	JButton btn[] = new JButton[10];
+	JButton startpvp = new JButton("Start PvP");
+	JButton startpvc = new JButton("Start PvComputer");
+    JButton over = new JButton("Exit");
+
+	JLabel winner;
+	Boolean turn = true;
+	int count=0;
+	Boolean computer = false;
+	int[] board = new int[10];
+	public Game(){
+		frame.setSize(412,268);
+		frame.setLocation(500,300);
+		frame.setLayout(new BorderLayout());
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		outside.setLayout(new FlowLayout(FlowLayout.CENTER));
+		startpvp.addActionListener(this);
+		startpvp.setEnabled(true);
+		outside.add(startpvp);
+		startpvc.addActionListener(this);
+		startpvc.setEnabled(true);
+		outside.add(startpvc);
+		//take out initial game
+		outside.add(panel);
+		
+		panel.setLayout(new GridLayout(3,3,2,2));
+		panel.setBackground(Color.black);
+		
+		
+		
+		for(int i=1;i<=9;i++){
+			btn[i] = new JButton("");
+			btn[i].setBackground(new Color(220, 220, 220));
+			btn[i].addActionListener(this);
+			btn[i].setEnabled(true);
+			panel.add(btn[i]);
+		
+		}
+		frame.add(outside, BorderLayout.CENTER);
+		frame.setVisible(true);
+		//outside.setLayout(new BorderLayout());
+		//outside.add(panel, BorderLayout.CENTER);
+		//panel.requestFocus();
+		
+		
+	}
+public void actionPerformed(ActionEvent click){
+		Object source = click.getSource();
+		
+		if(source==startpvp){
+			outside.setLayout(new BorderLayout());
+			outside.add(panel, BorderLayout.CENTER);
+			panel.requestFocus();
+			 outside.remove(startpvp);
+			 outside.remove(startpvc);
+             outside.revalidate();
+             outside.repaint();
+			
+		}
+		if(source==startpvc){
+			outside.setLayout(new BorderLayout());
+			outside.add(panel, BorderLayout.CENTER);
+			panel.requestFocus();
+			 outside.remove(startpvp);
+			 outside.remove(startpvc);
+             outside.revalidate();
+             outside.repaint();
+             computer=true;
+			
+		}
+		if(source==over){
+			System.exit(0);
+		}
+		for(int i =1;i<=9;i++){
+			if(source==btn[i]){
+				checkwin();
+
+				if(board[i]==0){
+					if(!computer){
+						count++;
+						if(turn){
+							btn[i].setText("X");
+							board[i]=1;
+							turn=false;
+						} else {
+							btn[i].setText("O");
+							board[i]=2;
+							turn=true;
+						}
+					} else {
+						count++;
+						btn[i].setText("X");
+						board[i]=1;
+						if (count<9){
+						artIntel(board);
+						count++;
+						}
+					}
+					
+					checkwin();
+				}
+			}
+			
+			
+		}
+
+	}
+	public void checkwin(){
+		
+		int z=0;
+		/*if((board[1]==board[2])&&(board[2]==board[3]))z=board[3];
+		if((board[4]==board[5])&&(board[5]==board[6]))z=board[6];
+		if((board[7]==board[8])&&(board[8]==board[9]))z=board[8];
+		if((board[1]==board[4])&&(board[4]==board[7]))z=board[4];
+		if((board[2]==board[5])&&(board[5]==board[8]))z=board[5];
+		if((board[3]==board[6])&&(board[6]==board[9]))z=board[6];
+		if((board[1]==board[5])&&(board[5]==board[9]))z=board[5];
+		if((board[3]==board[5])&&(board[5]==board[7]))z=board[5];
+		*/
+		
+		if(((board[1]==1)&&(board[2]==1)&&(board[3]==1))||
+			((board[4]==1)&&(board[5]==1)&&(board[6]==1))||
+			((board[7]==1)&&(board[8]==1)&&(board[9]==1))||
+			((board[1]==1)&&(board[4]==1)&&(board[7]==1))||
+			((board[2]==1)&&(board[5]==1)&&(board[8]==1))||
+			((board[3]==1)&&(board[6]==1)&&(board[9]==1))||
+			((board[1]==1)&&(board[5]==1)&&(board[9]==1))||
+			((board[3]==1)&&(board[5]==1)&&(board[7]==1)))
+			z=1;
+		else if(((board[1]==2)&&(board[2]==2)&&(board[3]==2))||
+				((board[4]==2)&&(board[5]==2)&&(board[6]==2))||
+				((board[7]==2)&&(board[8]==2)&&(board[9]==2))||
+				((board[1]==2)&&(board[4]==2)&&(board[7]==2))||
+				((board[2]==2)&&(board[5]==2)&&(board[8]==2))||
+				((board[3]==2)&&(board[6]==2)&&(board[9]==2))||
+				((board[1]==2)&&(board[5]==2)&&(board[9]==2))||
+				((board[3]==2)&&(board[5]==2)&&(board[7]==2)))
+				z=2;
+				
+		else if(count>=9)z=3;
+
+		
+		if( z>0){
+			if(z==1){
+				winner = new JLabel("X Wins");
+			} else if(z==2){
+				winner = new JLabel("O Wins");
+			} else {
+				winner = new JLabel("You Tied = LAME");
+			}
+			/*try {
+			    Thread.sleep(1000);                 //1000 milliseconds is one second.
+			} catch(InterruptedException ex) {
+			    Thread.currentThread().interrupt();
+			}*/
+			
+				frame.remove(outside);
+			
+             frame.revalidate();
+             frame.repaint();
+             frame.add(end_screen, BorderLayout.CENTER);
+             frame.setBackground(Color.white);
+             end_screen.add(winner, BorderLayout.CENTER);
+             over.addActionListener(this);
+     		 over.setEnabled(true);
+     		 end_screen.add(over, BorderLayout.SOUTH);
+             
+		}
+	}
+
+
+	public void artIntel(int[] a){
+		
+		Boolean tookTurn=false;
+		while(!tookTurn){
+		if(a[5]==0){a[5]=2;tookTurn=false;btn[5].setText("O");board[5]=2;break;}
+		if(a[1]==a[2]&&a[3]==0){a[3]=2;tookTurn=true;btn[3].setText("O");board[3]=2;break;}
+		if(a[1]==a[3]&&a[2]==0){a[2]=2;tookTurn=true;btn[2].setText("O");board[2]=2;break;}
+		if(a[2]==a[3]&&a[1]==0){a[1]=2;tookTurn=true;btn[1].setText("O");board[1]=2;break;}
+		
+		if(a[4]==a[5]&&a[6]==0){a[6]=2;tookTurn=true;btn[6].setText("O");board[6]=2;break;}
+		if(a[4]==a[6]&&a[5]==0){a[5]=2;tookTurn=true;btn[5].setText("O");board[5]=2;break;}
+		if(a[5]==a[6]&&a[4]==0){a[4]=2;tookTurn=true;btn[4].setText("O");board[4]=2;break;}
+		
+		if(a[7]==a[8]&&a[9]==0){a[9]=2;tookTurn=true;btn[9].setText("O");board[9]=2;break;}
+		if(a[7]==a[9]&&a[8]==0){a[8]=2;tookTurn=true;btn[8].setText("O");board[8]=2;break;}
+		if(a[8]==a[9]&&a[7]==0){a[7]=2;tookTurn=true;btn[7].setText("O");board[7]=2;break;}
+		
+		if(a[7]==a[4]&&a[1]==0){a[1]=2;tookTurn=true;btn[1].setText("O");board[1]=2;break;}
+		if(a[1]==a[7]&&a[4]==0){a[4]=2;tookTurn=true;btn[4].setText("O");board[4]=2;break;}
+		if(a[4]==a[1]&&a[7]==0){a[7]=2;tookTurn=true;btn[7].setText("O");board[7]=2;break;}
+		
+		if(a[2]==a[5]&&a[8]==0){a[8]=2;tookTurn=true;btn[8].setText("O");board[8]=2;break;}
+		if(a[2]==a[8]&&a[5]==0){a[5]=2;tookTurn=true;btn[5].setText("O");board[5]=2;break;}
+		if(a[5]==a[8]&&a[2]==0){a[2]=2;tookTurn=true;btn[2].setText("O");board[2]=2;break;}
+		
+		if(a[3]==a[6]&&a[9]==0){a[9]=2;tookTurn=true;btn[9].setText("O");board[9]=2;break;}
+		if(a[3]==a[9]&&a[6]==0){a[6]=2;tookTurn=true;btn[6].setText("O");board[6]=2;break;}
+		if(a[6]==a[9]&&a[3]==0){a[3]=2;tookTurn=true;btn[3].setText("O");board[3]=2;break;}
+		
+		if(a[1]==a[5]&&a[9]==0){a[9]=2;tookTurn=true;btn[9].setText("O");board[9]=2;break;}
+		if(a[1]==a[9]&&a[5]==0){a[5]=2;tookTurn=true;btn[5].setText("O");board[5]=2;break;}
+		if(a[5]==a[9]&&a[1]==0){a[1]=2;tookTurn=true;btn[1].setText("O");board[1]=2;break;}
+		
+		if(a[3]==a[5]&&a[7]==0){a[7]=2;tookTurn=true;btn[7].setText("O");board[7]=2;break;}
+		if(a[3]==a[7]&&a[5]==0){a[5]=2;tookTurn=true;btn[5].setText("O");board[5]=2;break;}
+		if(a[5]==a[7]&&a[3]==0){a[3]=2;tookTurn=true;btn[3].setText("O");board[3]=2;break;}
+		
+		if(!tookTurn&&a[1]==0){tookTurn=true;a[1]=2;btn[1].setText("O");board[1]=2;}
+		else if(!tookTurn&&a[2]==0){tookTurn=true;a[2]=2;btn[2].setText("O");board[2]=2;}
+		else if(!tookTurn&&a[3]==0){tookTurn=true;a[3]=2;btn[3].setText("O");board[3]=2;}
+		else if(!tookTurn&&a[4]==0){tookTurn=true;a[4]=2;btn[4].setText("O");board[4]=2;}
+		else if(!tookTurn&&a[5]==0){tookTurn=true;a[5]=2;btn[5].setText("O");board[5]=2;}
+		else if(!tookTurn&&a[6]==0){tookTurn=true;a[6]=2;btn[6].setText("O");board[6]=2;}
+		else if(!tookTurn&&a[7]==0){tookTurn=true;a[7]=2;btn[7].setText("O");board[7]=2;}
+		else if(!tookTurn&&a[8]==0){tookTurn=true;a[8]=2;btn[8].setText("O");board[8]=2;}
+		else if(!tookTurn&&a[9]==0){tookTurn=true;a[9]=2;btn[9].setText("O");board[9]=2;}
+		}
+	}
+	public int artificialIntel(int a[]){
+		int f=10; int q=1;int w=2;
+			while(f>9){	
+				if(a[0]==0)f=0;
+				if(a[1]==0)f=1;
+				if(a[2]==0)f=2;
+				for(int e=0;e<5;e=e+3){
+					if(a[q]==a[w]&&a[e]==0&&a[q]!=0)f=e;
+					if(a[e]==a[w]&&a[q]==0&&a[e]!=0)f=q;
+					if(a[q]==a[e]&&a[w]==0&&a[q]!=0)f=w;
+					q=q+3;w=w+3;
+				}
+				q=0;w=4;
+				for(int e=7;e<10;e++){
+					if(a[q]==a[w]&&a[e]==0&&a[q]!=0)f=e;
+					if(a[e]==a[w]&&a[q]==0&&a[e]!=0)f=q;
+					if(a[q]==a[e]&&a[w]==0&&a[q]!=0)f=w;
+					q++;w++;
+				}
+				if(a[1]==a[5]&&a[9]==0&&a[1]!=0)f=9;
+				if(a[1]==a[9]&&a[5]==0&&a[1]!=0)f=5;
+				if(a[5]==a[9]&&a[1]==0&&a[5]!=0)f=1;
+				if(a[3]==a[5]&&a[7]==0&&a[3]!=0)f=7;
+				if(a[3]==a[7]&&a[5]==0&&a[3]!=0)f=5;
+				if(a[5]==a[7]&&a[3]==0&&a[5]!=0)f=3;
+				if(a[5]==0)f=5;
+				
+			}	
+		return f;
+	}
+	public void compGo(){
+		int a=artificialIntel(board);
+		btn[a].setText("O");
+		board[a]=2;
+	}
+	
+	
+	
+	
+	public static void main(String[] args) {
+		new Game();// Calling the class construtor.
+		}
+}
+
+ 
